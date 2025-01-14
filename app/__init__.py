@@ -45,4 +45,6 @@ def create_app(config_class=Config):
         app.logger.setLevel(logging.INFO)
         app.logger.info('Py_Blog startup')
 
-from app import routes,models
+    return app
+
+# from app import routes,models

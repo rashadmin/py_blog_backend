@@ -7,6 +7,33 @@ from hashlib import md5
 from flask import url_for
 
 
+
+class PaginatedAPIMixin(object):
+    @staticmethod
+    def to_collection_dict(query, page, per_page, endpoint, **kwargs):
+        resources = query.paginate(page=page, per_page=per_page,
+                                   error_out=False)
+        data = {
+            'items': [item.to_dict() for item in resources.items],
+            '_meta': {
+                'page': page,
+                'per_page': per_page,
+                'total_pages': resources.pages,
+                'total_items': resources.total
+            },
+            '_links': {
+                'self': url_for(endpoint, page=page, per_page=per_page,
+                                **kwargs),
+                'next': url_for(endpoint, page=page + 1, per_page=per_page,
+                                **kwargs) if resources.has_next else None,
+                'prev': url_for(endpoint, page=page - 1, per_page=per_page,
+                                **kwargs) if resources.has_prev else None
+            }
+        }
+        return data
+
+
+
 class User(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -50,7 +77,7 @@ class User(UserMixin,db.Model):
             self.set_password(data['password'])
 
 
-class Post(db.Model):
+class Post(PaginatedAPIMixin,db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.String(64), index=True, unique=True)
     original_post = db.Column(db.String(5000), index=True, unique=True)
@@ -62,3 +89,18 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.original_post)
+    
+    def to_dict(self, include_email=False):
+        data = {
+            'id': self.id,
+            'original_post': self.original_post,
+            'timestamp': self.timestamp,
+            'user_id': self.user_id
+            # '_links': {
+            #     'self': url_for('api.get_user', id=self.id),
+            #     'avatar': self.avatar(128)
+            # }
+        }
+        if include_email:
+            data['email'] = self.email
+        return data
