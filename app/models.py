@@ -8,7 +8,7 @@ from app import login
 
 from hashlib import md5
 from flask import url_for
-
+import uuid
 
 
 class PaginatedAPIMixin(object):
@@ -119,14 +119,26 @@ class Post(PaginatedAPIMixin,db.Model):
         return '<User {}>'.format(self.original_post)
     
 
+    def set_post_id(self):
+        self.post_id = uuid.uuid1().hex
+
+    
+    def from_dict(self, data, new_post=False):
+        for field in ['user_id','description', 'original_post','blog_Post','linkedin_post','facebook_post','twitter_thread']:
+            if field in data:
+                setattr(self, field, data[field])
+        if new_post:
+            self.set_post_id()
+
     def to_dict(self, include_email=False):
         data = {
             'id': self.id,
             'original_post': self.original_post,
             'timestamp': self.timestamp,
             'user_id': self.user_id,
+            'post_id':self.post_id,
             '_links': {
-                'self': url_for('api.get_user', id=self.user_id),
+                'self': url_for('api.get_post', post_id=self.post_id),
             }
         }
         return data

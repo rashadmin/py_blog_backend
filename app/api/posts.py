@@ -1,7 +1,10 @@
 from app.api import bp
-from flask import jsonify,request,abort
+from flask import jsonify,request,abort,url_for
 from app.models import Post,User
+from app import db
 from app.api.auth import token_auth
+from app.api.errors import bad_request
+
 
 @bp.route('/posts', methods=['GET'])
 @token_auth.login_required
@@ -12,31 +15,47 @@ def get_posts():
     return jsonify(data)
 
 
-@bp.route('/users/<int:id>/posts', methods=['GET'])
+@bp.route('/posts/<string:post_id>', methods=['GET'])
 @token_auth.login_required
-def get_user_posts(id):
+def get_post(post_id):
+    id = Post.query.filter_by(post_id=post_id).first().user_id
     if token_auth.current_user().id != id:
         abort(403)
-    page = request.args.get('page', 1, type=int)
-    per_page = min(request.args.get('per_page', 4, type=int), 100)
-    posts = User.query.get_or_404(id).posts
-    data = Post.to_collection_dict(posts, page, per_page, 'api.get_posts')
+    data = Post.query.filter_by(post_id=post_id).first().to_dict()
     return jsonify(data)
 
-
-@bp.route('/users/<int:id>', methods=['PUT'])
+@bp.route('/posts', methods=['POST'])
 @token_auth.login_required
-def update_user(id):
-    if token_auth.current_user().id != id:
-        abort(403)
-    user = User.query.get_or_404(id)
+def create_post():
+    user_id = token_auth.current_user().id
     data = request.get_json() or {}
-    if 'username' in data and data['username'] != user.username and \
-            User.query.filter_by(username=data['username']).first():
-        return bad_request('please use a different username')
-    if 'email' in data and data['email'] != user.email and \
-            User.query.filter_by(email=data['email']).first():
-        return bad_request('please use a different email address')
-    user.from_dict(data, new_user=False)
+    if 'original_post' not in data:
+        return bad_request('must include original post fields')
+    data['user_id'] = user_id
+    post = Post()
+    post.from_dict(data, new_post=True)
+    db.session.add(post)
     db.session.commit()
-    return jsonify(user.to_dict())
+    response = jsonify(post.to_dict())
+    response.status_code = 201
+    response.headers['Location'] = url_for('api.get_post', post_id=post.post_id)
+    return response
+
+
+
+# @bp.route('/users/<int:id>', methods=['PUT'])
+# @token_auth.login_required
+# def update_user(id):
+#     if token_auth.current_user().id != id:
+#         abort(403)
+#     user = User.query.get_or_404(id)
+#     data = request.get_json() or {}
+#     if 'username' in data and data['username'] != user.username and \
+#             User.query.filter_by(username=data['username']).first():
+#         return bad_request('please use a different username')
+#     if 'email' in data and data['email'] != user.email and \
+#             User.query.filter_by(email=data['email']).first():
+#         return bad_request('please use a different email address')
+#     user.from_dict(data, new_user=False)
+#     db.session.commit()
+#     return jsonify(user.to_dict())
