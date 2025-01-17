@@ -124,7 +124,7 @@ class Post(PaginatedAPIMixin,db.Model):
 
     
     def from_dict(self, data, new_post=False):
-        for field in ['user_id','description', 'original_post','blog_Post','linkedin_post','facebook_post','twitter_thread']:
+        for field in ['user_id','description', 'original_post','status','blog_Post','linkedin_post','facebook_post','twitter_thread']:
             if field in data:
                 setattr(self, field, data[field])
         if new_post:
