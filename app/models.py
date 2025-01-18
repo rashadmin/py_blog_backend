@@ -130,7 +130,7 @@ class Post(PaginatedAPIMixin,db.Model):
         if new_post:
             self.set_post_id()
 
-    def to_dict(self, include_email=False):
+    def to_dict(self):
         data = {
             'id': self.id,
             'original_post': self.original_post,
