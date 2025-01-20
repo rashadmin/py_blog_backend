@@ -43,19 +43,13 @@ def create_post():
 
 
 
-# @bp.route('/users/<int:id>', methods=['PUT'])
-# @token_auth.login_required
-# def update_user(id):
-#     if token_auth.current_user().id != id:
-#         abort(403)
-#     user = User.query.get_or_404(id)
-#     data = request.get_json() or {}
-#     if 'username' in data and data['username'] != user.username and \
-#             User.query.filter_by(username=data['username']).first():
-#         return bad_request('please use a different username')
-#     if 'email' in data and data['email'] != user.email and \
-#             User.query.filter_by(email=data['email']).first():
-#         return bad_request('please use a different email address')
-#     user.from_dict(data, new_user=False)
-#     db.session.commit()
-#     return jsonify(user.to_dict())
+@bp.route('/post/<string:post_id>', methods=['PUT'])
+@token_auth.login_required
+def update_post(post_id):
+    id = Post.query.filter_by(post_id=post_id).first().user_id
+    if token_auth.current_user().id != id:
+        abort(403)
+    data = Post.query.filter_by(post_id=post_id).first().to_dict()
+    # post.from_dict(data, new_user=False)
+    db.session.commit()
+    # return jsonify(user.to_dict())
