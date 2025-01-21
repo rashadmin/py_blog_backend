@@ -52,4 +52,4 @@ def update_post(post_id):
     data = Post.query.filter_by(post_id=post_id).first().to_dict()
     # post.from_dict(data, new_user=False)
     db.session.commit()
-    # return jsonify(user.to_dict())
+    return jsonify(user.to_dict())
