@@ -51,6 +51,6 @@ def update_post(post_id):
     if token_auth.current_user().id != id:
         abort(403)
     data = Post.query.filter_by(post_id=post_id).first().to_dict()
-    # post.from_dict(data, new_user=False)
+    post.from_dict(data, new_user=False)
     db.session.commit()
     return jsonify(data.to_dict())
