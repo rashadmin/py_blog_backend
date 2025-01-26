@@ -5,7 +5,7 @@ import google.generativeai as genai
 class Chat_ai:
 
     def __init__(self):
-        genai.configure(api_key='AIzaSyC639sFB_Aiah4DTyDOY8H-GVpJRid_AMk')
+        genai.configure(api_key='')
         generation_config = {
                             "temperature": 0.2,
                             "top_p": 0.95,
