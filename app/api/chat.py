@@ -86,3 +86,5 @@ class Chat_ai:
         return response.text
 
     
+############################################################
+'''Return a list of dictionary like object that contain two keys, the sender and the text'''
