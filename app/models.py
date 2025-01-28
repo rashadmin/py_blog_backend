@@ -5,6 +5,7 @@ import os
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import UserMixin
 from app import login
+import json
 
 from hashlib import md5
 from flask import url_for
@@ -106,12 +107,13 @@ class Post(PaginatedAPIMixin,db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.String(64), index=True, unique=True)
     description = db.Column(db.String(64), index=True, unique=True)
+    conversation = db.Column(db.String(5000),index=True,unique=True)
     original_post = db.Column(db.String(5000), index=True, unique=True)
     blog_post = db.Column(db.String(5000), index=True, unique=True)
     linkedin_post = db.Column(db.String(5000),unique=True)
     facebook_post = db.Column(db.String(5000),unique=True)
     twitter_thread = db.Column(db.String(5000),unique=True)
-    status = db.Column(db.Boolean())
+    status = db.Column(db.Boolean(),default=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.now)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -124,21 +126,31 @@ class Post(PaginatedAPIMixin,db.Model):
 
     
     def from_dict(self, data, new_post=False):
-        for field in ['user_id','description', 'original_post','status','blog_Post','linkedin_post','facebook_post','twitter_thread']:
+        for field in ['user_id','description', 'conversation','status','blog_Post','linkedin_post','facebook_post','twitter_thread']:
             if field in data:
                 setattr(self, field, data[field])
         if new_post:
             self.set_post_id()
+            setattr(self,'original_post',data['original_post'])
+            setattr(self,'user_id',data['user_id'])
 
     def to_dict(self):
         data = {
             'id': self.id,
+            'description':self.id,
             'original_post': self.original_post,
+            'conversation':json.loads(self.conversation),
+            'status':self.status,
+            'blog_Post':self.blog_post,
+            'linkedin_post':self.linkedin_post,
+            'facebook_post':self.facebook_post,
+            'twitter_thread':self.twitter_thread,
             'timestamp': self.timestamp,
             'user_id': self.user_id,
             'post_id':self.post_id,
             '_links': {
                 'self': url_for('api.get_post', post_id=self.post_id),
+                'author':'rebrand.ly/pytech'
             }
         }
         return data

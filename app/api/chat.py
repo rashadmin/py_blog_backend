@@ -22,6 +22,9 @@ class Chat_ai:
     def start_model(self):
         self.chat_session = self.model.start_chat(history=[{"role": "user","parts": [self.instruction_text],},])
 
+    def continue_model(self,chat_session):
+        self.chat_session = self.model.start_chat(history=chat_session)
+
     def start_format_model(self,media):
         if media == 'Facebook':
             self.chat_session = self.model.start_chat(history=[{"role": "user","parts": [self.facebook_instruction_text],},])

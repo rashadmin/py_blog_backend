@@ -4,8 +4,8 @@ from app.models import Post
 from app import db
 from app.api.auth import token_auth
 from app.api.errors import bad_request
-
-
+from app.api.chat import Chat_ai
+import json
 @bp.route('/posts', methods=['GET'])
 @token_auth.login_required
 def get_posts():
@@ -33,6 +33,11 @@ def create_post():
         return bad_request('must include original post fields')
     data['user_id'] = user_id
     post = Post()
+    chat = Chat_ai()
+    chat.start_model()
+    chat.send_text(data['original_post'])
+    chats = chat.chat_conversation()
+    data['conversation'] = json.dumps(chats)
     post.from_dict(data, new_post=True)
     db.session.add(post)
     db.session.commit()
@@ -50,7 +55,9 @@ def update_post(post_id):
     id = Post.query.filter_by(post_id=post_id).first().user_id
     if token_auth.current_user().id != id:
         abort(403)
-    data = Post.query.filter_by(post_id=post_id).first().to_dict()
-    post.from_dict(data, new_user=False)
-    db.session.commit()
-    return jsonify(data.to_dict())
+    chat = Chat_ai()
+    post = Post.query.filter_by(post_id=post_id).first().to_dict()
+    chat.continue_model(post['chat_session'])
+    # post.from_dict(data, new_post=False)
+    # db.session.commit()
+    # return jsonify(data.to_dict())
