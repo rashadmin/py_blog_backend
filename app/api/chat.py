@@ -79,6 +79,7 @@ class Chat_ai:
     def chat_conversation(self):
         chats = [{'sender':'agent','text':json.loads(self.chat_session.history[i].parts[0].text)['question']} if i%2==0  else {'sender':'user','text':self.chat_session.history[i].parts[0].text} for i in range(1,len(self.chat_session.history)) ]
         return chats
+    
 
     def get_conversation(self):
         conversation = [self.formats(i) for i in range(1,len(self.chat_session.history)-1)]

@@ -108,6 +108,7 @@ class Post(PaginatedAPIMixin,db.Model):
     post_id = db.Column(db.String(64), index=True, unique=True)
     description = db.Column(db.String(64), index=True, unique=True)
     conversation = db.Column(db.String(5000),index=True,unique=True)
+    chat_session = db.Column(db.String(5000),index=True,unique=True)
     original_post = db.Column(db.String(5000), index=True, unique=True)
     blog_post = db.Column(db.String(5000), index=True, unique=True)
     linkedin_post = db.Column(db.String(5000),unique=True)
@@ -126,7 +127,7 @@ class Post(PaginatedAPIMixin,db.Model):
 
     
     def from_dict(self, data, new_post=False):
-        for field in ['user_id','description', 'conversation','status','blog_Post','linkedin_post','facebook_post','twitter_thread']:
+        for field in ['user_id','description','chat_session', 'conversation','status','blog_Post','linkedin_post','facebook_post','twitter_thread']:
             if field in data:
                 setattr(self, field, data[field])
         if new_post:
@@ -139,6 +140,7 @@ class Post(PaginatedAPIMixin,db.Model):
             'id': self.id,
             'description':self.id,
             'original_post': self.original_post,
+            'chat_session':self.chat_session,
             'conversation':json.loads(self.conversation),
             'status':self.status,
             'blog_Post':self.blog_post,
