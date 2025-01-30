@@ -42,7 +42,6 @@ class Chat_ai:
         else:
             return {f'text_{no}':self.chat_session.history[i].parts[0].text}
         
-
     def create_twitter_threads(self,blog_post, max_chars_per_tweet=280):
         """
         Divides a given blog post into a list of Twitter threads, 
@@ -85,10 +84,11 @@ class Chat_ai:
         conversation = [self.formats(i) for i in range(1,len(self.chat_session.history)-1)]
         return conversation
     
-    def format_text(self,text):
-        response = self.chat_session.send_message(text)
+    def generate(self):
+        response = self.chat_session.send_message(self.get_conversation())
         return response.text
 
     
 ############################################################
 '''Return a list of dictionary like object that contain two keys, the sender and the text'''
+'''The error is that session.history is returning an object of type content, which can't be serializable, by json'''
