@@ -37,7 +37,7 @@ def create_post():
     chat.start_model()
     chat.send_text(data['original_post'])
     chats = chat.chat_conversation()
-    session = chat.chat_session.history
+    session = chat.chat_conversation(chatbot=False)
     data['conversation'] = json.dumps(chats)
     data['chat_session'] = json.dumps(session)
     post.from_dict(data, new_post=True)
@@ -56,6 +56,8 @@ def create_post():
 def update_post(post_id):
     media_dict = {'facebook':'facebook_post','linkedin':'linkedin_post','X':'twitter_thread'}
     id = Post.query.filter_by(post_id=post_id).first().user_id
+    print(id)
+    print(token_auth.current_user().id)
     data = request.get_json() or {}
     if token_auth.current_user().id != id:
         abort(403)
@@ -75,13 +77,14 @@ def update_post(post_id):
     if 'text' not in data:
         return bad_request('must include text fields')
     chat = Chat_ai()
-    post = Post.query.filter_by(post_id=post_id).first().to_dict()
-    chat.continue_model(post['chat_session'])
+    chat_session = Post.query.filter_by(post_id=post_id).first().chat_session
+    chat.continue_model(json.loads(chat_session))
     chat.send_text(data['text'])
-    chats = chat.chat_conversation()
-    session = chat.history
+    chats = chat.chat_conversation(new_chat=False)
+    session = chat.chat_conversation(new_chat=False,chatbot=False)
     data['conversation'] = json.dumps(chats)
     data['chat_session'] = json.dumps(session)
+    post = Post.query.filter_by(post_id=post_id).first()
     post.from_dict(data)
     db.session.add(post)
     db.session.commit()

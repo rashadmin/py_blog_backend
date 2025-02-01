@@ -123,7 +123,7 @@ class Post(PaginatedAPIMixin,db.Model):
     
 
     def set_post_id(self):
-        self.post_id = uuid.uuid1().hex
+        self.post_id = uuid.uuid4().hex
 
     
     def from_dict(self, data, new_post=False):
@@ -140,7 +140,7 @@ class Post(PaginatedAPIMixin,db.Model):
             'id': self.id,
             'description':self.id,
             'original_post': self.original_post,
-            'chat_session':self.chat_session,
+            'chat_session':json.loads(self.chat_session),
             'conversation':json.loads(self.conversation),
             'status':self.status,
             'blog_Post':self.blog_post,
