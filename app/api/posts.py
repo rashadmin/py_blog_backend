@@ -56,24 +56,31 @@ def create_post():
 def update_post(post_id):
     media_dict = {'facebook':'facebook_post','linkedin':'linkedin_post','X':'twitter_thread'}
     id = Post.query.filter_by(post_id=post_id).first().user_id
+    status = Post.query.filter_by(post_id=post_id).first().status
     print(id)
     print(token_auth.current_user().id)
     data = request.get_json() or {}
     if token_auth.current_user().id != id:
         abort(403)
     if 'media' in data:
-        chat = Chat_ai()    
-        post = Post.query.filter_by(post_id=post_id).first().to_dict()
-        chat.start_format_model(data['media'])
-        response = chat.generate()
-        data[media_dict[data['media']]] = response
-        post.from_dict(data)
-        db.session.add(post)
-        db.session.commit()
-        response = jsonify(post.to_dict())
-        response.status_code = 201
-        response.headers['Location'] = url_for('api.get_post', post_id=post.post_id)
-        return response
+        if status:
+            chat = Chat_ai()    
+            post = Post.query.filter_by(post_id=post_id).first().to_dict()
+            chat.start_format_model(data['media'])
+            # print(post['conversation'][:-1])
+            response = chat.generate(json.dumps(post['conversation'][:-1]))
+            print(response)
+            data[media_dict[data['media']]] = response
+            post = Post.query.filter_by(post_id=post_id).first()
+            post.from_dict(data)
+            db.session.add(post)
+            db.session.commit()
+            response = jsonify(post.to_dict())
+            response.status_code = 201
+            response.headers['Location'] = url_for('api.get_post', post_id=post.post_id)
+            return response
+        else:
+            return bad_request('must complete conversation')
     if 'text' not in data:
         return bad_request('must include text fields')
     chat = Chat_ai()
@@ -81,6 +88,7 @@ def update_post(post_id):
     chat.continue_model(json.loads(chat_session))
     chat.send_text(data['text'])
     chats = chat.chat_conversation(new_chat=False)
+    data['status'] = chats[-1]['text'] == 'done'
     session = chat.chat_conversation(new_chat=False,chatbot=False)
     data['conversation'] = json.dumps(chats)
     data['chat_session'] = json.dumps(session)

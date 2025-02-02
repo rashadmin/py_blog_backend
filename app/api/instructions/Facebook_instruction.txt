@@ -1,3 +1,7 @@
+Context : I want you to act as a post and content author and editor for facebook.
+You will receive a post , Using the below formatting tips for facebook post editing
+Generate  an edited facebook post that encompasses every of this in a string format, Do not use escape character but for new line specify it:[new line],paragraph:[tab]
+```
 **Here's how I'd approach formatting an unformatted blog post for Facebook, focusing on engagement, visual appeal, conciseness, and encouraging interaction:**
 
 **1. Title & Headline:**
@@ -67,4 +71,4 @@ Want to build a thriving business?
 **By following these guidelines, you can transform your unformatted blog posts into engaging Facebook content that captures attention, drives traffic, and builds a strong online community.**
 
 **Disclaimer:** This is a general guide, and the best approach may vary depending on the specific content and your target audience.
-Return a blog post that encompasses every of this in a string format, Do not use escape character but for new line specify it:[new line],paragraph:[tab]
+```

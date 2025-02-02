@@ -5,7 +5,7 @@ import google.generativeai as genai
 class Chat_ai:
 
     def __init__(self):
-        genai.configure(api_key='')
+        genai.configure(api_key='AIzaSyC639sFB_Aiah4DTyDOY8H-GVpJRid_AMk')
         generation_config = {
                             "temperature": 0.2,
                             "top_p": 0.95,
@@ -26,9 +26,9 @@ class Chat_ai:
         self.chat_session = self.model.start_chat(history=chat_sessions)
 
     def start_format_model(self,media):
-        if media == 'Facebook':
+        if media == 'facebook':
             self.chat_session = self.model.start_chat(history=[{"role": "user","parts": [self.facebook_instruction_text],},])
-        elif media == 'Linkedin':
+        elif media == 'linkedin':
             self.chat_session = self.model.start_chat(history=[{"role": "user","parts": [self.linkedin_instruction_text],},])
         elif media == 'X':
             self.chat_session = self.model.start_chat(history=[{"role": "user","parts": [self.x_instruction_text],},])
@@ -38,7 +38,7 @@ class Chat_ai:
     def formats (self,i):
         no =  (i - 1) // 2 + 1
         if i%2==0:
-            return {f'question_{no}':json.loads(self.chat_session.history[i].parts[0].text)['question']}
+            return {f'question_{no}':self.chat_session.history[i].parts[0].text}
         else:
             return {f'text_{no}':self.chat_session.history[i].parts[0].text}
         
@@ -92,15 +92,12 @@ class Chat_ai:
         return chats
     
 
-    def get_conversation(self,chatbot=True):
-        if chatbot:
-            conversation = [self.formats(i) for i in range(1,len(self.chat_session.history)-1)]
-        else:
-            conversation = [self.formats(i) for i in range(len(self.chat_session.history)-1)]            
+    def get_conversation(self):
+        conversation = [self.formats(i) for i in range(1,len(self.chat_session.history)-1)]          
         return conversation
     
-    def generate(self):
-        response = self.chat_session.send_message(self.get_conversation())
+    def generate(self,conversation):
+        response = self.chat_session.send_message(conversation)
         return response.text
 
     
