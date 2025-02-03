@@ -38,6 +38,9 @@ def create_post():
     chat.send_text(data['original_post'])
     chats = chat.chat_conversation()
     session = chat.chat_conversation(chatbot=False)
+    chat.start_format_model()
+    description_model = json.loads(chat.generate_description(data['original_post']))['description']
+    data['description'] =json.dumps(description_model)
     data['conversation'] = json.dumps(chats)
     data['chat_session'] = json.dumps(session)
     post.from_dict(data, new_post=True)

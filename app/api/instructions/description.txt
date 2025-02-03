@@ -1,0 +1,15 @@
+Generate a description in 10 words or less that perfectly describes a text following this guidelines|:
+
+```
+1. **Identify the core topic:** The text is clearly about a book on prompt engineering.  This gives us "prompt engineering book" as the base.
+
+2. **Determine the type of text:** The author is sharing their experience and impressions, making it a review. This adds "review" to our phrase.
+
+3. **Extract key positive descriptors:** The author uses words like "detailed," "worthwhile," "insightful," and mentions learning "best practices."  We need to pick the most impactful ones. "Detailed" and "insightful" seem crucial.
+
+4. **Consider the practical application:** The author is excited to apply what they learned, suggesting the book offers practical advice.  "Practical" captures this.
+
+5. **Combine the elements:**  We now have "prompt engineering book review," "detailed," "insightful," and "practical."  We need to combine these concisely.
+
+6. **Refine for brevity and flow:** "Detailed, insightful, and practical" works well to describe the book's content.  Putting it all together gives us: "Prompt engineering book review: detailed, insightful, and practical techniques."  We add "techniques" to be a bit more specific about the content.
+```

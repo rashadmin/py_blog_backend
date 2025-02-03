@@ -127,18 +127,19 @@ class Post(PaginatedAPIMixin,db.Model):
 
     
     def from_dict(self, data, new_post=False):
-        for field in ['user_id','description','chat_session', 'conversation','status','blog_Post','linkedin_post','facebook_post','twitter_thread']:
+        for field in ['user_id','chat_session', 'conversation','status','blog_Post','linkedin_post','facebook_post','twitter_thread']:
             if field in data:
                 setattr(self, field, data[field])
         if new_post:
             self.set_post_id()
             setattr(self,'original_post',data['original_post'])
             setattr(self,'user_id',data['user_id'])
+            setattr(self,'description',data['description'])
 
     def to_dict(self):
         data = {
             'id': self.id,
-            'description':self.id,
+            'description':self.description,
             'original_post': self.original_post,
             'chat_session':json.loads(self.chat_session),
             'conversation':json.loads(self.conversation),
